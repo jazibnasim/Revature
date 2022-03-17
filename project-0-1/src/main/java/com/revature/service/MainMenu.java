@@ -10,7 +10,7 @@ import java.text.NumberFormat;
 
 /** This is the Main Menu */
 public class MainMenu {
-    static User user = new User("jazib123", "nick", 100.00);
+    static User user = new User(null, null, 0.00);
     static Account userAccount = new Account();
 
     static Scanner scanner = new Scanner(System.in);
@@ -19,6 +19,7 @@ public class MainMenu {
     static int choice;
     static int secondChoice;
     static UserRepo userRepo = new UserRepo();
+    static User currentUser = null;
 
     public static void run() throws InterruptedException, SQLException {
 
@@ -86,11 +87,7 @@ public class MainMenu {
             MainMenu.innerMenu();
         }
 
-//        if(enteredUserName.equals(user.getUserName()) && enteredPassword.equals(user.getPassword())){
-//            TimeUnit.SECONDS.sleep(1);
-//            MainMenu.innerMenu();
-
-//        } else {
+//       else {
 //
 //            System.out.println("Incorrect username or password! Please try again.");
 //            TimeUnit.SECONDS.sleep(2);
@@ -111,19 +108,19 @@ public class MainMenu {
             switch(secondChoice){
                 case 1:
                     TimeUnit.SECONDS.sleep(1);
-                    System.out.println("Your balance is " + formatter.format(userAccount.getBalance()));
+                    System.out.println("Your balance is " + formatter.format(user.getBalance()));
                     TimeUnit.SECONDS.sleep(2);
                     break;
                 case 2:
                     System.out.println("How much would you like to deposit?");
-                    double deposit = scanner.nextDouble();
+         /* - */    double deposit = scanner.nextDouble();
 
-                    double changeBalance = user.getBalance() + deposit;
+                    double depositChangeBalance = user.getBalance() + deposit;
                     //userRepo.updateBalance(user.getUserName(), changeBalance);
 
                     if(deposit > 0){
-                        userRepo.updateBalance(user.getUserName(), changeBalance);
-                        user.setBalance(changeBalance);
+                        userRepo.updateBalance(user.getUserName(), depositChangeBalance);
+                        user.setBalance(depositChangeBalance);
                     } else {
                         System.out.println("The number you provided is a negative. Please provide a number in the proper format.");
                         TimeUnit.SECONDS.sleep(2);
@@ -131,8 +128,11 @@ public class MainMenu {
                     break;
                 case 3:
                     System.out.println("How much would you like to withdraw?");
-                    double withdraw = scanner.nextDouble();
+        /* - */     double withdraw = scanner.nextDouble();
+
                     if(userAccount.getBalance() - withdraw > 0 && withdraw > 0){
+
+                        double withdrawChangeBalance = user.getBalance() - withdraw;
                         userAccount.setBalance(userAccount.getBalance() - withdraw);
                     } else if (userAccount.getBalance() - withdraw < 0 && withdraw > 0) {
                         System.out.println("Cannot complete. Account balance will overdraft.");

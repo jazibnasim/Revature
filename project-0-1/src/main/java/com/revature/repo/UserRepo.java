@@ -11,7 +11,7 @@ import java.sql.*;
 public class UserRepo {
 
     private static final Logger logger = LogManager.getLogger(ConnectionBridge.class);
-    User currentUser;
+    User user;
     UserRepo userRepo;
 
     //  This method populates a new row in the SQL database
@@ -51,7 +51,7 @@ public class UserRepo {
         try (Connection connection = ConnectionBridge.connect()) {
 
 
-            String sql = "select userName,password from users where userName=?";
+            String sql = "select userName,password,balance from users where userName=?";
             PreparedStatement stmt = connection.prepareStatement(sql);
 
             stmt.setString(1, username);
@@ -65,10 +65,10 @@ public class UserRepo {
                 orBal = rs.getDouble("balance");
             } //end while
             if (orPass.equals(password)) {
-                System.out.println(orPass);
-                currentUser.setUserName(orgUname);
-                currentUser.setPassword(orPass);
-                currentUser.setBalance(orBal);
+                System.out.println(orBal);
+                user.setUserName(orgUname);
+                user.setPassword(orPass);
+                user.setBalance(orBal);
                 return true;
 
               //  rs.close();
@@ -102,7 +102,7 @@ public class UserRepo {
             } //end while
             {
                 System.out.println(orBal);
-                currentUser.setBalance(orBal);
+                user.setBalance(orBal);
 
                 // rs.close();
             }
