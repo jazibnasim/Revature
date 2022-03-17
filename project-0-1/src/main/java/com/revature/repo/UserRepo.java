@@ -6,42 +6,34 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
+import java.sql.*;
 
 public class UserRepo {
 
     private static final Logger logger = LogManager.getLogger(ConnectionBridge.class);
+    User currentUser;
+    UserRepo userRepo;
 
-    public User createUser(String username, String password, String firstName, String lastName){
+    //  This method populates a new row in the SQL database
+    //  under each specific column with user-inputted data from register() method
+
+    public User createUser(String username, String password, Double balance){
         User user = null;
 
-
         try (Connection connection = ConnectionBridge.connect()) {
-            String sql = "insert into users(username, password, firstname, lastname) values (?, ?, ?, ?)";
+            String sql = "insert into users(username, password) values (?, ?)";
             PreparedStatement stmt = connection.prepareStatement(sql);
-
 
             stmt.setString(1, username);
             stmt.setString(2, password);
-            stmt.setString(3, firstName);
-            stmt.setString(4, lastName);
 
-
-
-
-            // this
             ResultSet resultSet = stmt.executeQuery();
 
-            if(resultSet.next()){
+         if(resultSet.next()){
                 user = new User(
                         resultSet.getString("username"),
                         resultSet.getString("password"),
-                        resultSet.getString("firstname"),
-                        resultSet.getString("lastname")
+                        resultSet.getDouble("balance")
                 );
             }
         } catch (SQLException e) {
@@ -50,55 +42,74 @@ public class UserRepo {
         return user;
     }
 
-    public boolean validateUserName(String username, String password){
-        User user = null;
+    public boolean checkLogin(String username, String password)
+            throws SQLException {
+        System.out.print("dfdF");
 
 
-
+        // connect to database usernames and query database
         try (Connection connection = ConnectionBridge.connect()) {
-            String sql = "select username,password from users where username=?";
+
+
+            String sql = "select userName,password from users where userName=?";
             PreparedStatement stmt = connection.prepareStatement(sql);
 
-
             stmt.setString(1, username);
-            stmt.setString(2, password);
 
-            // this
             ResultSet rs = stmt.executeQuery();
             String orgUname = "", orPass = "";
+            Double orBal = 0.00;
+            while (rs.next()) {
+                orgUname = rs.getString("username");
+                orPass = rs.getString("password");
+                orBal = rs.getDouble("balance");
+            } //end while
+            if (orPass.equals(password)) {
+                System.out.println(orPass);
+                currentUser.setUserName(orgUname);
+                currentUser.setPassword(orPass);
+                currentUser.setBalance(orBal);
+                return true;
 
-            if(rs.next()){
-
-                while (rs.next()) {
-                    orgUname = rs.getString("userName");
-                    orPass = rs.getString("password");
-                }
-                if (orPass.equals(password)) {
-                    //do something
-//                    user = new User(
-//                            rs.getString("username"),
-//                            rs.getString("password"),
-//                            rs.getString("firstname"),
-//                            rs.getString("lastname")
-//                    );
-                    user.setUserName(rs.getString("username"));
-                    user.setPassword(rs.getString("password"));
-                    user.setFirstName(rs.getString("firstname"));
-                    user.setLastName(rs.getString("lastname"));
-
-                    return true;
-                } else {
-                    System.out.println("Incorrect Username or Password. Please try again!");
-                }
-
-
-
+              //  rs.close();
+            } else {
+                //do something
             }
-        } catch (SQLException e) {
-            logger.warn(e.getMessage(), e);
-        }
+        }//end try
+        catch (Exception e) {
+        } //end catch
         return false;
-    }
+    } //end main
+
+    public void updateBalance(String username, double newBalance)
+            throws SQLException {
+
+
+        // connect to database usernames and query database
+        try (Connection connection = ConnectionBridge.connect()) {
+
+
+            String sql = "update users set balance = ? where username = ?";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+
+            stmt.setDouble(1, newBalance);
+            stmt.setString(2, username);
+
+            ResultSet rs = stmt.executeQuery();
+            Double orBal = 0.00;
+            while (rs.next()) {
+                orBal = rs.getDouble("balance");
+            } //end while
+            {
+                System.out.println(orBal);
+                currentUser.setBalance(orBal);
+
+                // rs.close();
+            }
+        }//end try
+        catch (Exception e) {
+        } //end catch
+    } //end main
 
 
 }

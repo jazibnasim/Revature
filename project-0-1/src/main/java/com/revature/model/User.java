@@ -1,46 +1,25 @@
 package com.revature.model;
-import com.revature.util.ConnectionBridge;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 
 public class User {
 
-
-
-
     private String userName = "";
     private String userPassword = "";
-    private String firstName = "";
-    private String lastName = "";
+    private Double balance = 0.00;
 
-
-
-    public User(String username, String password, String firstName, String lastName) {
+    public User(String username, String password, Double balance) {
 
         this.userName = username;
         this.userPassword = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.balance = balance;
+
     }
 
-
-    public String getFirstName() {
-        return firstName;
+    public Double getBalance() {
+        return balance;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setBalance(Double balance) {
+        this.balance = balance;
     }
 
     public String getUserName() {
@@ -65,9 +44,6 @@ public class User {
         return "User{" +
                 "userName='" + userName + '\'' +
                 ", userPassword='" + userPassword + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
                 '}';
     }
-
 }
