@@ -23,33 +23,13 @@ public class ConnectionBridge {
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url, username, password);  //Built in method call on connection
-            System.out.println("Connected to the PostgreSQL server successfully.");
+            //System.out.println("Connected to the PostgreSQL server successfully.");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
         return conn;
     }
-
-//  Statement statement;
-//
-//    {
-//        try {
-//            statement = connect().createStatement();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    ResultSet resultSet;
-//
-//    {
-//        try {
-//            resultSet = statement.executeQuery("select * from users");
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 }
 

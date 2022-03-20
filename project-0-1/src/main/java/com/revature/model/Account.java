@@ -2,9 +2,9 @@ package com.revature.model;
 
 import java.text.NumberFormat;
 
-public class Account {
+/**-------Work-in-progress to modularize-------*/
 
-    private int userID;
+public class Account {
 
     private double balance;
 

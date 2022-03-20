@@ -2,6 +2,7 @@ package com.revature.service;
 
 import com.revature.model.Account;
 import com.revature.model.User;
+import com.revature.repo.AccountRepo;
 import com.revature.repo.UserRepo;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -10,7 +11,7 @@ import java.text.NumberFormat;
 
 /** This is the Main Menu */
 public class MainMenu {
-    static User user = new User(null, null, 0.00);
+    static User user = new User(0,null, null, 0.00);
     static Account userAccount = new Account();
 
     static Scanner scanner = new Scanner(System.in);
@@ -19,7 +20,8 @@ public class MainMenu {
     static int choice;
     static int secondChoice;
     static UserRepo userRepo = new UserRepo();
-    static User currentUser = null;
+    static AccountRepo accountRepo = new AccountRepo();
+    static User currentUser;
 
     public static void run() throws InterruptedException, SQLException {
 
@@ -48,7 +50,7 @@ public class MainMenu {
 
    }
     // This method takes input from scanner/user and populates the createUser() method
-    public static void register() throws InterruptedException, SQLException {
+    public static void register() throws InterruptedException {
 
         System.out.print("Create a user name: ");
         String chosenUserName = scanner.next();
@@ -58,8 +60,7 @@ public class MainMenu {
         String chosenPassword = scanner.next();
         user.setPassword(chosenPassword);
 
-        UserRepo userRepo = new UserRepo();
-        userRepo.createUser(user.getUserName(), user.getPassword(), user.getBalance());
+        userRepo.createUser(user.getUserName(), user.getPassword());
 
         TimeUnit.SECONDS.sleep(2);
 
@@ -70,33 +71,23 @@ public class MainMenu {
 
     //This method logs user in by comparing inputted data with username pulled in from database
     public static void login() throws InterruptedException, SQLException {
+
         System.out.print("Enter user name: ");
-        String enteredUserName = scanner.next();
+        String enteredUserName = scanner.next();  //input
 
         System.out.print("Enter password: ");
-        String enteredPassword= scanner.next();
-
+        String enteredPassword= scanner.next();  //input
 
         TimeUnit.SECONDS.sleep(1);
 
-
-
-        if(userRepo.checkLogin(enteredUserName,enteredPassword));
-        {
+            userRepo.checkLogin(enteredUserName, enteredPassword);  //method call
             TimeUnit.SECONDS.sleep(1);
-            MainMenu.innerMenu();
-        }
-
-//       else {
-//
-//            System.out.println("Incorrect username or password! Please try again.");
-//            TimeUnit.SECONDS.sleep(2);
-//        }
+            MainMenu.innerMenu();   //Inner Menu call
     }
 
     /** This is the Account Menu */
 
-    public static void innerMenu() throws InterruptedException, SQLException {
+    public static void innerMenu() throws InterruptedException {
         do {
             System.out.println("Welcome!");
             System.out.println("1. Balance");
@@ -104,37 +95,43 @@ public class MainMenu {
             System.out.println("3. Withdraw");
             System.out.println("4. Log-out");
 
+            //currentUser = accountRepo.currentUser;
+            currentUser = userRepo.currentUser;
+
             secondChoice = scanner.nextInt();
             switch(secondChoice){
-                case 1:
+                case 1: //check balance
                     TimeUnit.SECONDS.sleep(1);
-                    System.out.println("Your balance is " + formatter.format(user.getBalance()));
+                    System.out.println("Your balance is " + formatter.format(currentUser.getBalance()));
                     TimeUnit.SECONDS.sleep(2);
                     break;
-                case 2:
+                case 2: //deposit
                     System.out.println("How much would you like to deposit?");
          /* - */    double deposit = scanner.nextDouble();
 
-                    double depositChangeBalance = user.getBalance() + deposit;
-                    //userRepo.updateBalance(user.getUserName(), changeBalance);
-
+                    //Validation to prevent exceptions and errors
                     if(deposit > 0){
-                        userRepo.updateBalance(user.getUserName(), depositChangeBalance);
-                        user.setBalance(depositChangeBalance);
+                        double depositChangeBalance = currentUser.getBalance() + deposit;
+                        accountRepo.updateBalance(currentUser.getUserName(), depositChangeBalance);
+                        currentUser.setBalance(depositChangeBalance);
                     } else {
                         System.out.println("The number you provided is a negative. Please provide a number in the proper format.");
                         TimeUnit.SECONDS.sleep(2);
                     }
                     break;
-                case 3:
+
+                case 3: //withdraw
                     System.out.println("How much would you like to withdraw?");
         /* - */     double withdraw = scanner.nextDouble();
 
-                    if(userAccount.getBalance() - withdraw > 0 && withdraw > 0){
+                    //Validation to prevent exceptions and errors
+                    if(currentUser.getBalance() - withdraw > 0 && withdraw > 0){
 
-                        double withdrawChangeBalance = user.getBalance() - withdraw;
-                        userAccount.setBalance(userAccount.getBalance() - withdraw);
-                    } else if (userAccount.getBalance() - withdraw < 0 && withdraw > 0) {
+                        double withdrawChangeBalance = currentUser.getBalance() - withdraw;
+                        userRepo.updateBalance(currentUser.getUserName(), withdrawChangeBalance);
+                        currentUser.setBalance(withdrawChangeBalance);
+
+                    } else if (currentUser.getBalance() - withdraw < 0 && withdraw > 0) {
                         System.out.println("Cannot complete. Account balance will overdraft.");
                     } else if (withdraw < 0){
                         System.out.println("The number you provided is a negative. Please provide a number in the proper format.");
@@ -144,12 +141,11 @@ public class MainMenu {
 
                      }
                     break;
-                case 4:
+                case 4: //logout
                     break;
-
             }
 
-        } while (secondChoice != 4) ;
+        } while (secondChoice != 4) ; //don't log out until user inputs "4"
     }
 
 }

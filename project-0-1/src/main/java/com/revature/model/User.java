@@ -5,14 +5,34 @@ public class User {
     private String userName = "";
     private String userPassword = "";
     private Double balance = 0.00;
+    private int id = 0;
 
-    public User(String username, String password, Double balance) {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public User(int id, String username, String password, Double balance) {
+
+        this.id = id;
+        this.userName = username;
+        this.userPassword = password;
+        this.balance = balance;
+
+    }
+
+    public User(String username, String password) {
 
         this.userName = username;
         this.userPassword = password;
         this.balance = balance;
 
     }
+
+
 
     public Double getBalance() {
         return balance;
